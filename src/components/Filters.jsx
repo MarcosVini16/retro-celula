@@ -13,7 +13,7 @@ const Filters = React.memo(({
   onStartDateChange,
   onEndDateChange,
   onClearFilters,
-  isProcessing // NOVO: mostrar quando está processando
+  isProcessing
 }) => {
   return (
     <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-6 mb-8">

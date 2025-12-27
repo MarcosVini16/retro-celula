@@ -88,46 +88,72 @@ export const calculateStats = (filteredData) => {
   };
 };
 
-// NOVA FUNÇÃO: Agregar dados por semana quando há muitos pontos
+// Pega o início da semana (domingo) de uma data
+const getWeekStart = (date) => {
+  const d = new Date(date);
+  const day = d.getDay();
+  const diff = d.getDate() - day;
+  const weekStart = new Date(d.setDate(diff));
+  weekStart.setHours(0, 0, 0, 0);
+  return weekStart;
+};
+
+// Agregar dados por semana SOMANDO valores de múltiplas células
 const aggregateByWeek = (data) => {
   const weekMap = new Map();
   
   data.forEach(d => {
-    const date = new Date(d.data);
-    // Pega o início da semana (domingo)
-    const weekStart = new Date(date);
-    weekStart.setDate(date.getDate() - date.getDay());
+    const weekStart = getWeekStart(d.data);
     const weekKey = weekStart.toISOString().split('T')[0];
     
     if (!weekMap.has(weekKey)) {
       weekMap.set(weekKey, {
-        participantes: [],
-        conversoes: [],
-        arena: [],
-        domingo: [],
-        date: weekStart
+        participantes: 0,
+        conversoes: 0,
+        arena: 0,
+        domingo: 0,
+        date: weekStart,
+        count: 0
       });
     }
     
     const week = weekMap.get(weekKey);
-    week.participantes.push(d.participantes);
-    week.conversoes.push(d.conversoes);
-    week.arena.push(d.arenaFreq);
-    week.domingo.push(d.domingoFreq);
+    week.participantes += d.participantes;
+    week.conversoes += d.conversoes;
+    week.arena += d.arenaFreq;
+    week.domingo += d.domingoFreq;
+    week.count += 1;
   });
   
-  return Array.from(weekMap.entries()).map(([key, values]) => ({
-    data: values.date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
-    Participantes: Math.round(values.participantes.reduce((a, b) => a + b, 0) / values.participantes.length),
-    Conversões: Math.round(values.conversoes.reduce((a, b) => a + b, 0)),
-    Arena: Math.round(values.arena.reduce((a, b) => a + b, 0) / values.arena.length),
-    Domingo: Math.round(values.domingo.reduce((a, b) => a + b, 0) / values.domingo.length)
-  }));
+  return Array.from(weekMap.entries())
+    .sort((a, b) => new Date(a[0]) - new Date(b[0]))
+    .map(([key, values]) => ({
+      data: values.date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
+      Participantes: values.participantes,
+      Conversões: values.conversoes,
+      Arena: values.arena,
+      Domingo: values.domingo
+    }));
 };
 
-// OTIMIZAÇÃO: Limitar pontos no gráfico para melhor performance
+// Contar quantas células únicas estão nos dados
+const countUniqueCelulas = (data) => {
+  return new Set(data.map(d => d.celula)).size;
+};
+
+// OTIMIZAÇÃO: Preparar dados do gráfico com agregação inteligente
 export const prepareChartData = (filteredData) => {
-  // Se tiver poucos dados, mostrar todos
+  if (filteredData.length === 0) return [];
+  
+  const uniqueCelulas = countUniqueCelulas(filteredData);
+  
+  // Se está vendo múltiplas células, SEMPRE agregar por semana
+  if (uniqueCelulas > 1) {
+    return aggregateByWeek(filteredData);
+  }
+  
+  // Se é apenas UMA célula, mostrar dados individuais
+  // mas limitar pontos se tiver muitos
   if (filteredData.length <= 50) {
     return filteredData.map(d => ({
       data: new Date(d.data).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
@@ -138,19 +164,6 @@ export const prepareChartData = (filteredData) => {
     }));
   }
   
-  // Se tiver entre 50-150 pontos, pegar a cada 2
-  if (filteredData.length <= 150) {
-    return filteredData
-      .filter((_, index) => index % 2 === 0)
-      .map(d => ({
-        data: new Date(d.data).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
-        Participantes: d.participantes,
-        Conversões: d.conversoes,
-        Arena: d.arenaFreq,
-        Domingo: d.domingoFreq
-      }));
-  }
-  
-  // Se tiver muitos dados (>150), agregar por semana
+  // Se uma célula com muitos dados, ainda agregar por semana
   return aggregateByWeek(filteredData);
 };

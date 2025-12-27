@@ -11,16 +11,13 @@ import { filterData, calculateStats, prepareChartData } from './utils/dataProces
 function App() {
   const { data, isLoading, error, handleFileUpload } = useDataLoader();
   
-  // Estados dos filtros
   const [selectedCelula, setSelectedCelula] = useState('');
   const [selectedEquipe, setSelectedEquipe] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   
-  // useTransition para melhorar UX em atualizações pesadas
   const [isPending, startTransition] = useTransition();
 
-  // Debounce nas datas para evitar processamento excessivo
   const debouncedStartDate = useDebounce(startDate, 300);
   const debouncedEndDate = useDebounce(endDate, 300);
 
@@ -32,7 +29,6 @@ function App() {
     return [...new Set(data.map(d => d.equipe))].sort();
   }, [data]);
 
-  // Filtrar dados com debounce nas datas
   const filteredData = useMemo(() => {
     return filterData(data, { 
       selectedCelula, 
@@ -50,7 +46,11 @@ function App() {
     return prepareChartData(filteredData);
   }, [filteredData]);
 
-  // Handlers com transition para não bloquear a UI
+  // Verificar se os dados estão agregados (múltiplas células)
+  const isAggregated = useMemo(() => {
+    return new Set(filteredData.map(d => d.celula)).size > 1;
+  }, [filteredData]);
+
   const handleEquipeChange = (value) => {
     startTransition(() => {
       setSelectedEquipe(value);
@@ -64,7 +64,7 @@ function App() {
   };
 
   const handleStartDateChange = (value) => {
-    setStartDate(value); // Sem transition aqui porque o debounce já cuida
+    setStartDate(value);
   };
 
   const handleEndDateChange = (value) => {
@@ -106,10 +106,9 @@ function App() {
               isProcessing={isPending}
             />
 
-            {/* Mostrar stats e gráficos mesmo durante processamento, mas com opacidade */}
             <div className={isPending ? 'opacity-50 pointer-events-none transition-opacity' : 'transition-opacity'}>
               <StatsCards stats={stats} />
-              <Charts chartData={chartData} />
+              <Charts chartData={chartData} isAggregated={isAggregated} />
             </div>
 
             {filteredData.length === 0 && !isPending && (

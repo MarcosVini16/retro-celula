@@ -8,9 +8,18 @@ const tooltipStyle = {
   boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
 };
 
-const ParticipantsChart = React.memo(({ data }) => (
+const ParticipantsChart = React.memo(({ data, isAggregated }) => (
   <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-6 md:p-8">
-    <h3 className="text-xl md:text-2xl font-bold text-gray-800 mb-6">Evolução de Participantes</h3>
+    <div className="mb-6">
+      <h3 className="text-xl md:text-2xl font-bold text-gray-800">
+        Evolução de Participantes
+      </h3>
+      {isAggregated && (
+        <p className="text-sm text-gray-500 mt-1">
+          Dados agregados por semana (somando todas as células selecionadas)
+        </p>
+      )}
+    </div>
     <ResponsiveContainer width="100%" height={350}>
       <LineChart data={data}>
         <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
@@ -27,9 +36,18 @@ const ParticipantsChart = React.memo(({ data }) => (
 
 ParticipantsChart.displayName = 'ParticipantsChart';
 
-const EventsChart = React.memo(({ data }) => (
+const EventsChart = React.memo(({ data, isAggregated }) => (
   <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-6 md:p-8">
-    <h3 className="text-xl md:text-2xl font-bold text-gray-800 mb-6">Frequência nos Eventos</h3>
+    <div className="mb-6">
+      <h3 className="text-xl md:text-2xl font-bold text-gray-800">
+        Frequência nos Eventos
+      </h3>
+      {isAggregated && (
+        <p className="text-sm text-gray-500 mt-1">
+          Dados agregados por semana (somando todas as células selecionadas)
+        </p>
+      )}
+    </div>
     <ResponsiveContainer width="100%" height={350}>
       <BarChart data={data}>
         <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
@@ -46,13 +64,13 @@ const EventsChart = React.memo(({ data }) => (
 
 EventsChart.displayName = 'EventsChart';
 
-const Charts = React.memo(({ chartData }) => {
+const Charts = React.memo(({ chartData, isAggregated }) => {
   if (chartData.length === 0) return null;
 
   return (
     <div className="space-y-6">
-      <ParticipantsChart data={chartData} />
-      <EventsChart data={chartData} />
+      <ParticipantsChart data={chartData} isAggregated={isAggregated} />
+      <EventsChart data={chartData} isAggregated={isAggregated} />
     </div>
   );
 });
