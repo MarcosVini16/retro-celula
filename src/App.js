@@ -125,6 +125,9 @@ function App() {
           </>
         )}
       </div>
+      <div className='flex justify-center'>
+        <a href="https://www.flaticon.com/free-icons/statistics" title="statistics icons" className='underline text-white hover:text-blue-200'>Statistics icons created by Creative Avenue - Flaticon</a>
+      </div>   
     </div>
   );
 }
