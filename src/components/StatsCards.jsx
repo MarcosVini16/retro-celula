@@ -43,8 +43,8 @@ const StatsCards = React.memo(({ stats }) => {
         />
         <StatCard 
           icon={DollarSign}
-          label="Ofertas"
-          value={`R$ ${stats.totalOfertas.toFixed(2)}`}
+          label="Parceiro de Deus"
+          value={`R$ ${stats.totalPD.toFixed(2)}`}
           gradient="from-emerald-500 to-emerald-600"
         />
       </div>

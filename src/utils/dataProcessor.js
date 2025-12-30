@@ -9,7 +9,7 @@ export const processData = (rawData) => {
     const conversoes = parseInt(row['Quantas conversões nesta semana em sua célula?']) || 0;
     const arenaFreq = parseInt(row['Qual foi a arregimentação de sua célula no Arena dessa semana?']) || 0;
     const domingoFreq = parseInt(row['Qual foi a arregimentação de sua célula no Culto de Domingo dessa semana?']) || 0;
-    const ofertas = parseFloat(row['Parceiros de Deus arrecadados na célula dessa semana? 💰\n(Escreva o valor em Reais conforme o exemplo: 75.50)']) || 0;
+    const PD = parseFloat(row['Parceiros de Deus arrecadados na célula dessa semana? 💰\n(Escreva o valor em Reais conforme o exemplo: 75.50)']) || 0;
     
     if (!celula || !timestamp) return;
 
@@ -29,7 +29,7 @@ export const processData = (rawData) => {
         conversoes,
         arenaFreq,
         domingoFreq,
-        ofertas
+        PD
       });
     }
   });
@@ -73,7 +73,7 @@ export const calculateStats = (filteredData) => {
   const totalConversoes = filteredData.reduce((sum, d) => sum + d.conversoes, 0);
   const totalArena = filteredData.reduce((sum, d) => sum + d.arenaFreq, 0);
   const totalDomingo = filteredData.reduce((sum, d) => sum + d.domingoFreq, 0);
-  const totalOfertas = filteredData.reduce((sum, d) => sum + d.ofertas, 0);
+  const totalPD = filteredData.reduce((sum, d) => sum + d.PD, 0);
 
   return {
     totalParticipantes,
@@ -83,7 +83,7 @@ export const calculateStats = (filteredData) => {
     totalConversoes,
     totalArena,
     totalDomingo,
-    totalOfertas,
+    totalPD,
     reunioes: filteredData.length
   };
 };
