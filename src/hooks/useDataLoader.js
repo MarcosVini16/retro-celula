@@ -19,7 +19,7 @@ export const useDataLoader = () => {
       const response = await fetch('celulas.csv');
       
       if (!response.ok) {
-        throw new Error('Arquivo CSV não encontrado. Certifique-se de que o arquivo está em /public/assets/celulas.csv');
+        throw new Error('Arquivo CSV não encontrado. Certifique-se de que o arquivo está em /public/celulas.csv');
       }
 
       const csvText = await response.text();
