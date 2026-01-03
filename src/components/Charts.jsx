@@ -40,7 +40,7 @@ const EventsChart = React.memo(({ data, isAggregated }) => (
   <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-6 md:p-8">
     <div className="mb-6">
       <h3 className="text-xl md:text-2xl font-bold text-gray-800">
-        Frequência nos Eventos
+        Frequência nos Cultos
       </h3>
       {isAggregated && (
         <p className="text-sm text-gray-500 mt-1">
